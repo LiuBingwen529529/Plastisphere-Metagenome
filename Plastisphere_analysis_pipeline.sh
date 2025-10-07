@@ -10,8 +10,7 @@ megahit -1 ./sample_paired_1.fastq.gz -2 ./sample_paired_2.fastq.gz --memory 0.9
 ##1.1 metawrap binning
 metawrap binning -o ./INITIAL_BINNING -t 20 -a ./sample.contigs.fa --metabat2 --maxbin2 --concoct --universal ./sample_1.fastq ./sample_2.fastq
 ##1.2 metawrap bin_refinement
-metawrap bin_refinement -o sample_BIN_REFINEMENT_50_10 -t 48 -A ./sample_INITIAL_BINNING/metabat2_bins/ -B ./sample_INITIAL_BINNING/maxbin2_bins/ -C ./ sample_INITIAL_BINNING/concoct_bins/ -c 50 -x 10
-
+metawrap bin_refinement -o ./REFINED_BINS -A ./INITIAL_BINNING/metabat2_bins -B ./INITIAL_BINNING/maxbin2_bins -C ./INITIAL_BINNING/concoct_bins -c 50 -x 10 -t 32 -m 64
 ##2. dRep
 All produced bin sets were aggregated and de-replicated at 95% average nucleotide identity (ANI) using dRep v3.2.2
 dRep dereplicate ./drep95/ -g ./*.fa -p 15 -d -comp 50 -con 10 -nc 0.30 -pa 0.9 -sa 0.95
