@@ -65,5 +65,4 @@ ggplot(pcoa_scores, aes(PCoA1, PCoA2, color = group)) +
     plot.subtitle = element_blank()  # 移除原subtitle位置文字
   )
 
-# 7.alpha 多样性的比较
 
