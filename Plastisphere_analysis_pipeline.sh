@@ -1,4 +1,6 @@
 ######Assembly of reads into contigs
 ##1. Trim
-The metagenomic raw reads were examined using FastQC v0.11.9 (http://www.bioinformatics.babraham.ac.uk/projects/fastqc/), low-quality sequences, primers, and adaptors were trimmed using the Trimmomatic v0.39.
-java -jar trimmomatic-0.39.jar PE -threads 8 ./sample_1.fastq.gz ./sample_2.fastq.gz ./sample_1.qc.fq.gz ./sample_unpair_1.qc.fq.gz ./sample_2.qc.fq.gz ./sample_unpair_2.qc.fq.gz ILLUMINACLIP:TruSeq3-PE-2.fa:2:30:10 LEADING:2 TRAILING:2 SLIDINGWINDOW:4:20 MINLEN:50
+for seq in $(cat /home/amax/plastisphere/DNA/Clean_data/seq.txt); do
+mkdir /home/amax/plastisphere/DNA/Clean_data/$seq
+java -jar /home/amax/software/Trimmomatic-0.39/trimmomatic-0.39.jar PE -threads 48 -phred33 /home/amax/plastisphere/DNA/Raw_data/$seq/${seq}.R1.fq.gz /home/amax/plastisphere/DNA/Raw_data/$seq/${seq}.R2.fq.gz /home/amax/plastisphere/DNA/Clean_data/$seq/${seq}_paired_1.fastq.gz /home/amax/plastisphere/DNA/Clean_data/$seq/${seq}_unpaired_1.fastq.gz /home/amax/plastisphere/DNA/Clean_data/$seq/${seq}_paired_2.fastq.gz /home/amax/plastisphere/DNA/Clean_data/$seq/${seq}_unpaired_2.fastq.gz ILLUMINACLIP:/home/amax/software/Trimmomatic-0.39/adapters/TruSeq3-PE-2.fa:2:30:10:8:true SLIDINGWINDOW:4:20 LEADING:2 TRAILING:2 MINLEN:50 
+done
