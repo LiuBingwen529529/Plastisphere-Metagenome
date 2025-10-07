@@ -26,5 +26,6 @@ gtdbtk classify_wf --genome_dir ./non_redundant/dereplicated_genomes --out_dir .
 phylophlan_write_config_file -o phylo.cfg -d a --db_aa diamond --map_aa diamond --msa mafft --trim trimal --tree1 iqtree --tree2 raxml --verbose
 phylophlan -i ./phylo/input_dir -d phylophlan -f ./phylo/phylo.cfg --diversity high --min_num_markers 80 --accurate --nproc 128 -o ./phylo/output_dir --verbose 
 
-###The RPKM values of the MAGs were calculated using CoverM v0.6.1
-coverm genome --coupled sample_1.fastq.gz sample_2.fastq.gz -d ./dereplicated_genomes -x fa -t 10 --min-read-percent-identity 0.95 --min-read-aligned-percent 0.75 --contig-end-exclusion 0 -m rpkm -o sample_rpkm.txt
+##5. The RPKM values of the MAGs 
+coverm genome --coupled ./sample_1.fastq ./sample_2.fastq --genome-fasta-files ./dereplicated_genomes/*.fa --min-read-percent-identity 0.95 --min-read-aligned-percent 0.75 --contig-end-exclusion 0 -m rpkm -o ./sample_rpkm --threads 64
+
