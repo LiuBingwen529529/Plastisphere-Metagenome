@@ -8,8 +8,7 @@ megahit -1 ./sample_paired_1.fastq.gz -2 ./sample_paired_2.fastq.gz --memory 0.9
 ####Generation of prokaryotic metagenome-assembled genomes (MAGs)
 ##1. bin
 ##1.1 metawrap binning
-metawrap binning -o sample_INITIAL_BINNING -t 48 -a samplecontigs.fasta --metabat2 --maxbin2 --concoct sample_1.fastq sample_2.fastq
-
+metawrap binning -o ./INITIAL_BINNING -t 20 -a ./sample.contigs.fa --metabat2 --maxbin2 --concoct --universal ./sample_1.fastq ./sample_2.fastq
 ##1.2 metawrap bin_refinement
 metawrap bin_refinement -o sample_BIN_REFINEMENT_50_10 -t 48 -A ./sample_INITIAL_BINNING/metabat2_bins/ -B ./sample_INITIAL_BINNING/maxbin2_bins/ -C ./ sample_INITIAL_BINNING/concoct_bins/ -c 50 -x 10
 
