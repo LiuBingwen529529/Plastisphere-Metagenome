@@ -20,11 +20,11 @@ metawrap bin_refinement -o ./REFINED_BINS -A ./INITIAL_BINNING/metabat2_bins -B 
 dRep dereplicate non_redundant -g ./*.fa -comp 50 -con 10 -nc 0.30 -pa 0.9 -sa 0.95 -p 64 --genomeInfo genome_info_2.csv
 
 ##3. GTDB
-gtdbtk classify_wf --genome_dir ./00MAG_50_10/ --out_dir ./ --extension fa --prefix bin --cpus 32
+gtdbtk classify_wf --genome_dir ./non_redundant/dereplicated_genomes --out_dir ./taxonomy_gtdb --extension fa --cpus 64 
 
-####The maximum-likelihood phylogenetic trees of MAGs
-The maximum-likelihood phylogenetic trees of MAGs were constructed based on a concatenated dataset of 400 universally conserved marker proteins using PhyloPhlAn v3.0.64
-phylophlan -i ./ 01drep95_prodigal -d /user/db/phylophlan --diversity high -f my_genome_cell.cfg --accurate -o ./drep95-tree --nproc 15 --min_num_markers 80
+##4. The maximum-likelihood phylogenetic trees of MAGs
+phylophlan_write_config_file -o phylo.cfg -d a --db_aa diamond --map_aa diamond --msa mafft --trim trimal --tree1 iqtree --tree2 raxml --verbose
+phylophlan -i ./phylo/input_dir -d phylophlan -f ./phylo/phylo.cfg --diversity high --min_num_markers 80 --accurate --nproc 128 -o ./phylo/output_dir --verbose 
 
 ###The RPKM values of the MAGs were calculated using CoverM v0.6.1
 coverm genome --coupled sample_1.fastq.gz sample_2.fastq.gz -d ./dereplicated_genomes -x fa -t 10 --min-read-percent-identity 0.95 --min-read-aligned-percent 0.75 --contig-end-exclusion 0 -m rpkm -o sample_rpkm.txt
