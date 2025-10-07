@@ -35,6 +35,57 @@ prodigal -i MAG.fa -p meta -o ./MAG_genes.gff" -a ./MAG_proteins.faa -d ./MAG_or
 ##7. ARG
 deeparg predict --model LS --type prot --model-version v2 -i ./MAG_proteins.faa -o MAG_deeparg -d DEEPARG_DB --min-prob 0.8 --arg-alignment-identity 50 --arg-alignment-evalue 1e-10 
 
+##8. VFG
+blastp -query ./MAG_proteins.faa -db ./VFDB_setA/VFDB_setA -out ./VFG_result -evalue 1e-5 -outfmt "6 qseqid sseqid pident qcovs evalue bitscore qstart qend sstart send" -num_threads 32 -max_target_seqs 1 -qcov_hsp_perc 70
+awk '$3 >= 80 && $4 >= 70' ./VFG_result > ./VFG_filtered_result
+
+##9. MGE
+blastn -query ./MAG_orf.fna -db ./MGE/MGE_db_nucl -out ./MGE_result -evalue 1e-10 -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore qcovs" -num_threads 64 
+awk '$3 >= 80' ./MGE_result > ./MGE_filtered_result
+
+##10. HGT
+MetaCHIP PI -g group.txt -t 64 -i ./dereplicated_genomes -x fa -p Plastisphere
+MetaCHIP BP -p Plastisphere -g group.txt -t 128 -pfr
+
+##11. Defense System
+defense-finder run ./MAG_proteins.faa -o ./Defensefinder
+
+
+####Identification and annotation of viral contigs
+
+##1. Identification
+##1.1 DeepVirFinder
+python ./DeepVirFinder/dvf.py -i ./sample.contigs.fa -l 10000 -c 4 -o ./DeepVirusFinder/
+##1.2 tRNA
+virsorter run --seqfile ./sample.contigs.fa --min-length 10000 --min-score 0.5 --exclude-lt2gene -j 24 -w ./VirSorter/sample
+##1.3 CheckV
+diamond makedb --in checkv_reps.faa --db checkv_reps.dmnd --threads 32
+checkv end_to_end viral_genomes.fasta checkv -t 32
+
+##2. Taxonomic classification
+genomad end-to-end --cleanup ./vOTUs/clusterRes_rep_seq.fasta ./Virus/taxonomy ./db/genomad_db
+
+##3. AMG
+
+
+####Prediction of virus-host linkages
+
+##1. CRISPER
+java -cp ./software/CRT1.2-CLI.jar crt ./MAG.fa CRT_output
+blastn –query ./extracted_spacer/all_spacers_corrected.fasta -db ./vOTUs_db -outfmt “6 qseqid sseqid pident length mismatch” -perc_identity 95 > blast_results.tsv
+
+##2. tRNA
+tRNAscan-SE -Q -B -o ./tRNA_prediction/vOTUs_tRNAs.txt -f ./tRNA_prediction/vOTUs_tRNAs.fasta ./vOTUs/clusterRes_rep_seq.fasta
+blastn -query ./tRNA_prediction/extract_tRNAs.fasta -db ./MAGs_db/MAGs_db -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore qlen slen" -perc_identity 100 -num_threads 16 -out ./tRNA_prediction/blast_results_2.tsv
+awk '($3 == 100) && ($4 == $13)' blast_results_2.tsv > filtered_results.tsv 
+
+##3. Homology
+blastn -query ./vOTUs/clusterRes_rep_seq.fasta -db ./MAGs_db/MAGs_db -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore" -evalue 1e-10 -perc_identity 95 -word_size 28 -num_threads 48 -out ./homology/blast_results.tsv
+awk '$12 >= 50 && $3 >= 95 && $4 >= 2500' blast_results.tsv > filtered_hits.tsv
+
+
+
+
 
 
 
