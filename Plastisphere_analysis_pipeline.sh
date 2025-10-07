@@ -8,6 +8,7 @@ megahit -1 ./sample_paired_1.fastq.gz -2 ./sample_paired_2.fastq.gz --memory 0.9
 
 
 
+
 ####Recovery and annotation of metagenome-assembled genomes (MAGs)
 
 ##1. bin
@@ -51,6 +52,8 @@ MetaCHIP BP -p Plastisphere -g group.txt -t 128 -pfr
 defense-finder run ./MAG_proteins.faa -o ./Defensefinder
 
 
+
+
 ####Identification and annotation of viral contigs
 
 ##1. Identification
@@ -62,10 +65,21 @@ virsorter run --seqfile ./sample.contigs.fa --min-length 10000 --min-score 0.5 -
 diamond makedb --in checkv_reps.faa --db checkv_reps.dmnd --threads 32
 checkv end_to_end viral_genomes.fasta checkv -t 32
 
-##2. Taxonomic classification
+##2. Cluster
+mmseqs easy-cluster cleaned.fasta clusterRes tmp --min-seq-id 0.95 -c 0.85 --cov-mode 1
+
+##3. The RPKM values of the vOTUs
+coverm contig --reference ./vOTUs/clusterRes_rep_seq.fasta -1 ./sample_1.fastq -2 ./sample_2.fastq --methods rpkm --threads 24 --min-read-percent-identity 95 --min-read-aligned-percent 75 -o ./sample_rpkm.tsv 
+
+##4. Taxonomic classification
 genomad end-to-end --cleanup ./vOTUs/clusterRes_rep_seq.fasta ./Virus/taxonomy ./db/genomad_db
 
-##3. AMG
+##5. AMG
+virsorter run -w ./virsorter2 -i ./vOTUs/clusterRes_rep_seq.fasta --prep-for-dramv --seqname-suffix-off --viral-gene-enrich-off --provirus-off --min-score 0.5 -j 64 all
+DRAM-v.py annotate -i final-viral-combined-for-dramv.fa -v viral-affi-contigs-for-dramv.tab --threads 20 -o ./annotation
+DRAM-v.py distill -i ./annotation/annotations.tsv -o ./annotation/distilled
+
+
 
 
 ####Prediction of virus-host linkages
@@ -82,11 +96,3 @@ awk '($3 == 100) && ($4 == $13)' blast_results_2.tsv > filtered_results.tsv 
 ##3. Homology
 blastn -query ./vOTUs/clusterRes_rep_seq.fasta -db ./MAGs_db/MAGs_db -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore" -evalue 1e-10 -perc_identity 95 -word_size 28 -num_threads 48 -out ./homology/blast_results.tsv
 awk '$12 >= 50 && $3 >= 95 && $4 >= 2500' blast_results.tsv > filtered_hits.tsv
-
-
-
-
-
-
-
-
