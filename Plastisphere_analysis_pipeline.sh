@@ -8,7 +8,7 @@ megahit -1 ./sample_paired_1.fastq.gz -2 ./sample_paired_2.fastq.gz --memory 0.9
 
 
 
-####Generation of prokaryotic metagenome-assembled genomes (MAGs)
+####Recovery and annotation of metagenome-assembled genomes (MAGs)
 
 ##1. bin
 ##1.1 metawrap binning
