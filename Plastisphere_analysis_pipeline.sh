@@ -29,3 +29,13 @@ phylophlan -i ./phylo/input_dir -d phylophlan -f ./phylo/phylo.cfg --diversity h
 ##5. The RPKM values of the MAGs 
 coverm genome --coupled ./sample_1.fastq ./sample_2.fastq --genome-fasta-files ./dereplicated_genomes/*.fa --min-read-percent-identity 0.95 --min-read-aligned-percent 0.75 --contig-end-exclusion 0 -m rpkm -o ./sample_rpkm --threads 64
 
+##6. Prodigal
+prodigal -i MAG.fa -p meta -o ./MAG_genes.gff" -a ./MAG_proteins.faa -d ./MAG_orf.fna
+
+##7. ARG
+deeparg predict --model LS --type prot --model-version v2 -i ./MAG_proteins.faa -o MAG_deeparg -d DEEPARG_DB --min-prob 0.8 --arg-alignment-identity 50 --arg-alignment-evalue 1e-10 
+
+
+
+
+
